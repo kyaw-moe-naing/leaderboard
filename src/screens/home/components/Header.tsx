@@ -1,4 +1,4 @@
-import { MenuView } from "@react-native-menu/menu"
+import { MenuAction, MenuView } from "@react-native-menu/menu"
 import { useTheme } from "@react-navigation/native"
 import { OptionPayload, setOption } from "app/actions/filters"
 import { filterLeaderboard } from "app/actions/leaderboard"
@@ -16,7 +16,32 @@ function Header() {
   const nameSortOptions = Object.values(NameSortOptions);
   const rankSortOptions = Object.values(RankSortOptions);
 
-  const option = useSelector((state: RootState) => state.filters.option)
+  const filters = useSelector((state: RootState) => state.filters)
+  const isSearchActive = filters.name.length > 0;
+
+  const menuActions: MenuAction[] = [
+    {
+      id: 'Rank',
+      title: 'Rank',
+      subactions: rankSortOptions.map(option => {
+        return {
+          id: option,
+          title: option,
+        };
+      }),
+    },
+    {
+      id: 'Name',
+      title: 'Name',
+      subactions: nameSortOptions.map(option => {
+        return {
+          id: option,
+          title: option,
+        };
+      }),
+    }
+  ];
+
   const dispatch = useAppDispatch()
 
   const onChange = (event: OptionPayload) => {
@@ -29,31 +54,10 @@ function Header() {
       <Text style={[styles.title, { color: colors.text }]}>Leaderboard</Text>
 
       <MenuView
-        actions={[
-          {
-            id: 'Rank',
-            title: 'Rank',
-            subactions: rankSortOptions.map(option => {
-              return {
-                id: option,
-                title: option,
-              };
-            }),
-          },
-          {
-            id: 'Name',
-            title: 'Name',
-            subactions: nameSortOptions.map(option => {
-              return {
-                id: option,
-                title: option,
-              };
-            }),
-          }
-        ]}
+        actions={isSearchActive ? [] : menuActions}
         onPressAction={({ nativeEvent }) => onChange(nativeEvent.event as OptionPayload)}
       >
-        <DropDownButton value={option} />
+        <DropDownButton value={filters.option} onPress={isSearchActive ? undefined : () => { }} />
       </MenuView>
     </View>
   )

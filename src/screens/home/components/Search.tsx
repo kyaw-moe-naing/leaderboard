@@ -1,19 +1,31 @@
-import { setName } from "app/actions/filters"
-import { filterLeaderboard } from "app/actions/leaderboard"
+import { setName, setOption } from "app/actions/filters"
+import { filterLeaderboard, searchUser } from "app/actions/leaderboard"
 import { useAppDispatch } from "app/hooks"
-import { RootState } from "app/store"
 import Button from "components/Button"
 import SearchInput from "components/SearchInput"
 import { useState } from "react"
-import { SafeAreaView, View, StyleSheet } from "react-native"
-import { useSelector } from "react-redux"
-import { GAP } from "utils/constants"
+import { SafeAreaView, View, StyleSheet, Keyboard } from "react-native"
+import { GAP, RankSortOptions } from "utils/constants"
 
 function Search() {
   const [username, setUsername] = useState('');
 
-  const name = useSelector((state: RootState) => state.filters.name)
   const dispatch = useAppDispatch()
+
+  const onChange = (text: string) => {
+    setUsername(text);
+    if (text.length == 0) {
+      dispatch(setName(''));
+      dispatch(setOption(RankSortOptions.highest));
+      dispatch(filterLeaderboard(RankSortOptions.highest));
+    }
+  }
+
+  const search = () => {
+    dispatch(setName(username));
+    dispatch(searchUser(username));
+    Keyboard.dismiss();
+  }
 
   return (
     <>
@@ -22,16 +34,13 @@ function Search() {
         <SearchInput
           value={username}
           placeholder="Search User"
-          onChange={(text) => {
-            setUsername(text);
-            if (text.length == 0) dispatch(setName(''))
-          }}
+          onChange={onChange}
         />
         <View style={{ width: GAP / 2 }} />
         <Button
           width={120}
           title="Search"
-          onPress={() => dispatch(setName(username))}
+          onPress={username.length == 0 ? undefined : search}
         />
       </View>
     </>

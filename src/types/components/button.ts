@@ -6,7 +6,7 @@ type ButtonProps = {
   height?: DimensionValue;
   color?: string;
   title: string;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 type DropDownButtonProps = {

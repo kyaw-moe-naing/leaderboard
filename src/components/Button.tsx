@@ -18,12 +18,14 @@ function Button(props: ButtonProps) {
 
   return (
     <TouchableOpacity
+      disabled={!onPress}
       style={[
         styles.button,
         {
           width,
           height: height ?? 48,
-          backgroundColor: color ?? colors.card
+          backgroundColor: color ?? colors.card,
+          opacity: onPress ? 1 : 0.5,
         },
       ]}
       onPress={onPress}>

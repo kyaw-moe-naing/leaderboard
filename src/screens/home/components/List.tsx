@@ -1,7 +1,6 @@
 import { useTheme } from "@react-navigation/native"
 import User from "components/User"
 import { FlatList, StyleSheet, View } from "react-native"
-import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated"
 import { GAP } from "utils/constants"
 import Header from "./Header"
 import { useSelector } from "react-redux"
@@ -13,13 +12,10 @@ function List() {
   const name = useSelector((state: RootState) => state.filters.name)
   const leaderboard = useSelector((state: RootState) => state.leaderboard)
 
-  if (name.length == 0) return;
+  if (leaderboard.length == 0) return;
 
   return (
-    <Animated.View
-      entering={SlideInDown}
-      exiting={SlideOutDown}
-      style={[styles.list, { backgroundColor: colors.card }]}>
+    <View style={[styles.list, { backgroundColor: colors.card }]}>
       <Header />
 
       <FlatList
@@ -27,13 +23,13 @@ function List() {
         contentContainerStyle={styles.listContent}
         data={leaderboard.slice(0, 10)}
         renderItem={item => <User
-          isSearchUser={item.item.name == name}
+          isSearchUser={name.length > 0 && item.item.name.includes(name)}
           rank={item.index + 1}
           leaderboard={item.item}
         />}
         ItemSeparatorComponent={() => <View style={{ height: GAP / 2 }} />}
       />
-    </Animated.View>
+    </View>
   )
 }
 

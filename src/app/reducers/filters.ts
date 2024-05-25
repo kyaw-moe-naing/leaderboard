@@ -28,4 +28,5 @@ function filtersReducer(state = initialState, action: SetNameAction | SetOptionA
   }
 }
 
+export { type FiltersState }
 export default filtersReducer

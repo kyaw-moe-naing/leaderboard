@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native"
-import { ArrowDown, ArrowUp } from "assets/icons/icons"
+import { ArrowDown } from "assets/icons/icons"
 import { StyleSheet, Text, TouchableOpacity } from "react-native"
 import { DropDownButtonProps } from "types/components/button"
 import { GAP } from "utils/constants"
@@ -11,7 +11,8 @@ function DropDownButton(props: DropDownButtonProps) {
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: colors.background }]}
+      disabled={!onPress}
+      style={[styles.button, { backgroundColor: colors.background, opacity: onPress ? 1 : 0.5 }]}
       onPress={onPress}
     >
       <Text style={[styles.value, { color: colors.text }]}>{value}</Text>
