@@ -10,9 +10,8 @@ type ButtonProps = {
 }
 
 type DropDownButtonProps = {
-  selected?: boolean;
   value: string;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 export type { DropDownButtonProps }

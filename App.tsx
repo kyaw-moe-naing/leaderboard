@@ -7,9 +7,9 @@ import AppContainer from './src/navigation/containers/App';
 
 function App() {
   return (
-    // <Provider store={store}>
-    <AppContainer />
-    // </Provider>
+    <Provider store={store}>
+      <AppContainer />
+    </Provider>
   );
 }
 

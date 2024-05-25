@@ -14,6 +14,7 @@ function HomeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    justifyContent: 'center',
   },
 })
 

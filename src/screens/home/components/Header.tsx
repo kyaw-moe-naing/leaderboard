@@ -1,35 +1,60 @@
 import { MenuView } from "@react-native-menu/menu"
 import { useTheme } from "@react-navigation/native"
+import { OptionPayload, setOption } from "app/actions/filters"
+import { filterLeaderboard } from "app/actions/leaderboard"
+import { useAppDispatch } from "app/hooks"
+import { RootState } from "app/store"
 import DropDownButton from "components/DropDownButton"
-import { useState } from "react"
-import { View, Text, StyleSheet, Animated } from "react-native"
-import { GAP, SortOptions } from "utils/constants"
+import { View, Text, StyleSheet } from "react-native"
+import { useSelector } from "react-redux"
+import { GAP, NameSortOptions, RankSortOptions } from "utils/constants"
 import { PlusJakartaSans } from "utils/fonts"
 
 function Header() {
   const { colors } = useTheme()
 
-  const [showOptions, setShowOptions] = useState(false);
+  const nameSortOptions = Object.values(NameSortOptions);
+  const rankSortOptions = Object.values(RankSortOptions);
+
+  const option = useSelector((state: RootState) => state.filters.option)
+  const dispatch = useAppDispatch()
+
+  const onChange = (event: OptionPayload) => {
+    dispatch(setOption(event));
+    dispatch(filterLeaderboard(event))
+  }
 
   return (
-    <View>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>Leaderboard</Text>
-        <DropDownButton
-          selected={showOptions}
-          value="Highest"
-          onPress={() => setShowOptions(!showOptions)}
-        />
-      </View>
+    <View style={styles.header}>
+      <Text style={[styles.title, { color: colors.text }]}>Leaderboard</Text>
 
       <MenuView
-        title="Sort By"
-        actions={Object.values(SortOptions).map(option => {
-          return {
-            title: option,
+        actions={[
+          {
+            id: 'Rank',
+            title: 'Rank',
+            subactions: rankSortOptions.map(option => {
+              return {
+                id: option,
+                title: option,
+              };
+            }),
+          },
+          {
+            id: 'Name',
+            title: 'Name',
+            subactions: nameSortOptions.map(option => {
+              return {
+                id: option,
+                title: option,
+              };
+            }),
           }
-        })}
-      />
+        ]}
+        onPressAction={({ nativeEvent }) => onChange(nativeEvent.event as OptionPayload)}
+      >
+        <DropDownButton value={option} />
+      </MenuView>
     </View>
   )
 }
@@ -45,11 +70,6 @@ const styles = StyleSheet.create({
     fontFamily: PlusJakartaSans.bold,
     fontSize: 16,
   },
-  listContent: {
-    flexGrow: 1,
-    paddingHorizontal: GAP,
-    // paddingVertical: GAP / 2,
-  }
 })
 
 export default Header

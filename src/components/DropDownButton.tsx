@@ -6,16 +6,16 @@ import { GAP } from "utils/constants"
 import { PlusJakartaSans } from "utils/fonts"
 
 function DropDownButton(props: DropDownButtonProps) {
-  const { selected, value, onPress } = props;
+  const { value, onPress } = props;
   const { colors } = useTheme()
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: colors.primary }]}
+      style={[styles.button, { backgroundColor: colors.background }]}
       onPress={onPress}
     >
       <Text style={[styles.value, { color: colors.text }]}>{value}</Text>
-      {selected ? <ArrowUp size={18} color={colors.text} /> : <ArrowDown size={18} color={colors.text} />}
+      <ArrowDown size={18} color={colors.text} />
     </TouchableOpacity>
   )
 }
