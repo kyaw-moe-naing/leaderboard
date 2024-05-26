@@ -1,29 +1,31 @@
-import { setName, setOption } from "app/actions/filters"
-import { filterLeaderboard, searchUser } from "app/actions/leaderboard"
+import { searchUser } from "app/actions/leaderboard"
+import { sortLeaderboard } from "app/actions/sort"
 import { useAppDispatch } from "app/hooks"
+import { RootState } from "app/store"
 import Button from "components/Button"
 import SearchInput from "components/SearchInput"
 import { useState } from "react"
 import { SafeAreaView, View, StyleSheet, Keyboard } from "react-native"
-import { GAP, RankSortOptions } from "utils/constants"
+import { useSelector } from "react-redux"
+import { GAP } from "utils/constants"
 
 function Search() {
   const [username, setUsername] = useState('');
 
+  const option = useSelector((state: RootState) => state.sort.option);
+  const leaderboard = useSelector((state: RootState) => state.leaderboard.leaderboard);
+
   const dispatch = useAppDispatch()
 
-  const onChange = (text: string) => {
-    setUsername(text);
-    if (text.length == 0) {
-      dispatch(setName(''));
-      dispatch(setOption(RankSortOptions.highest));
-      dispatch(filterLeaderboard(RankSortOptions.highest));
-    }
+  const search = (text: string) => {
+    dispatch(searchUser({ name: text }));
+    dispatch(sortLeaderboard({ option, leaderboard: text.length == 0 ? leaderboard : leaderboard.slice(0, 10) }));
+    Keyboard.dismiss();
   }
 
-  const search = () => {
-    dispatch(setName(username));
-    dispatch(searchUser(username));
+  const onClear = () => {
+    setUsername('');
+    search('');
     Keyboard.dismiss();
   }
 
@@ -34,13 +36,14 @@ function Search() {
         <SearchInput
           value={username}
           placeholder="Search User"
-          onChange={onChange}
+          onChange={setUsername}
+          onClear={onClear}
         />
         <View style={{ width: GAP / 2 }} />
         <Button
           width={120}
           title="Search"
-          onPress={username.length == 0 ? undefined : search}
+          onPress={username.length == 0 ? undefined : () => search(username)}
         />
       </View>
     </>

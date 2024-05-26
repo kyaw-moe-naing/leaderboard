@@ -11,6 +11,8 @@ function SearchInput(props: InputProps) {
     value,
     placeholder,
     onChange,
+    onEndEditing,
+    onClear
   } = props;
   const { colors } = useTheme();
 
@@ -32,11 +34,12 @@ function SearchInput(props: InputProps) {
         placeholderTextColor={colors.border}
         selectionColor={colors.text}
         onChangeText={onChange}
+        onEndEditing={e => onEndEditing ? onEndEditing(e.nativeEvent.text) : undefined}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
       {value &&
-        <TouchableOpacity onPress={() => onChange('')}>
+        <TouchableOpacity onPress={onClear}>
           <ClearIcon size={18} color={colors.text} />
         </TouchableOpacity>}
     </View>

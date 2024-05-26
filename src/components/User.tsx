@@ -19,7 +19,7 @@ function User(props: UserProps) {
       <View style={styles.rankContainer}>
         <Text style={[styles.rank, { color: colors.text }]}>{rank}</Text>
       </View>
-      <Text style={[styles.name, { color: colors.text }]}>{leaderboard.name}</Text>
+      <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>{leaderboard.name}</Text>
       <Text style={[styles.bananas, { color: colors.text }]}>{leaderboard.bananas} Bananas</Text>
     </View>
   )

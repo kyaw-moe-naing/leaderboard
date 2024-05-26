@@ -5,12 +5,15 @@ import { GAP } from "utils/constants"
 import Header from "./Header"
 import { useSelector } from "react-redux"
 import { RootState } from "app/store"
+import useGetRankHook from "utils/hooks/rank"
 
 function List() {
   const { colors } = useTheme()
 
-  const name = useSelector((state: RootState) => state.filters.name)
-  const leaderboard = useSelector((state: RootState) => state.leaderboard)
+  const name = useSelector((state: RootState) => state.leaderboard.name)
+  const leaderboard = useSelector((state: RootState) => state.sort.leaderboard)
+
+  const { getRank } = useGetRankHook()
 
   if (leaderboard.length == 0) return;
 
@@ -24,7 +27,7 @@ function List() {
         data={leaderboard.slice(0, 10)}
         renderItem={item => <User
           isSearchUser={name.length > 0 && item.item.name.includes(name)}
-          rank={item.index + 1}
+          rank={getRank(item.item)}
           leaderboard={item.item}
         />}
         ItemSeparatorComponent={() => <View style={{ height: GAP / 2 }} />}

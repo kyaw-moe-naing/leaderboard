@@ -1,7 +1,6 @@
-import { MenuAction, MenuView } from "@react-native-menu/menu"
+import { MenuView } from "@react-native-menu/menu"
 import { useTheme } from "@react-navigation/native"
-import { OptionPayload, setOption } from "app/actions/filters"
-import { filterLeaderboard } from "app/actions/leaderboard"
+import { OptionPayload, sortLeaderboard } from "app/actions/sort"
 import { useAppDispatch } from "app/hooks"
 import { RootState } from "app/store"
 import DropDownButton from "components/DropDownButton"
@@ -16,37 +15,20 @@ function Header() {
   const nameSortOptions = Object.values(NameSortOptions);
   const rankSortOptions = Object.values(RankSortOptions);
 
-  const filters = useSelector((state: RootState) => state.filters)
-  const isSearchActive = filters.name.length > 0;
+  const option = useSelector((state: RootState) => state.sort.option);
 
-  const menuActions: MenuAction[] = [
-    {
-      id: 'Rank',
-      title: 'Rank',
-      subactions: rankSortOptions.map(option => {
-        return {
-          id: option,
-          title: option,
-        };
-      }),
-    },
-    {
-      id: 'Name',
-      title: 'Name',
-      subactions: nameSortOptions.map(option => {
-        return {
-          id: option,
-          title: option,
-        };
-      }),
-    }
-  ];
+  const name = useSelector((state: RootState) => state.leaderboard.name);
+  const leaderboard = useSelector((state: RootState) => state.leaderboard.leaderboard);
 
   const dispatch = useAppDispatch()
 
   const onChange = (event: OptionPayload) => {
-    dispatch(setOption(event));
-    dispatch(filterLeaderboard(event))
+    dispatch(
+      sortLeaderboard({
+        option: event,
+        leaderboard: name.length == 0 ? leaderboard : leaderboard.slice(0, 10)
+      })
+    )
   }
 
   return (
@@ -54,10 +36,31 @@ function Header() {
       <Text style={[styles.title, { color: colors.text }]}>Leaderboard</Text>
 
       <MenuView
-        actions={isSearchActive ? [] : menuActions}
+        actions={[
+          {
+            id: 'Rank',
+            title: 'Rank',
+            subactions: rankSortOptions.map(option => {
+              return {
+                id: option,
+                title: option,
+              };
+            }),
+          },
+          {
+            id: 'Name',
+            title: 'Name',
+            subactions: nameSortOptions.map(option => {
+              return {
+                id: option,
+                title: option,
+              };
+            }),
+          }
+        ]}
         onPressAction={({ nativeEvent }) => onChange(nativeEvent.event as OptionPayload)}
       >
-        <DropDownButton value={filters.option} onPress={isSearchActive ? undefined : () => { }} />
+        <DropDownButton value={option} />
       </MenuView>
     </View>
   )

@@ -11,8 +11,7 @@ function DropDownButton(props: DropDownButtonProps) {
 
   return (
     <TouchableOpacity
-      disabled={!onPress}
-      style={[styles.button, { backgroundColor: colors.background, opacity: onPress ? 1 : 0.5 }]}
+      style={[styles.button, { backgroundColor: colors.background }]}
       onPress={onPress}
     >
       <Text style={[styles.value, { color: colors.text }]}>{value}</Text>

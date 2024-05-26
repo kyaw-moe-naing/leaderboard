@@ -1,42 +1,51 @@
-import { FILTER_LEADERBOARD, INITIALIZE_LEADERBOARD, LeaderboardAction, SEARCH_USER } from "app/actions/leaderboard";
+import { INITIALIZE_LEADERBOARD, LeaderboardAction, LeaderboardState, SEARCH_USER } from "app/actions/leaderboard";
 import { Alert } from "react-native";
-import Leaderboard from "types/models/leaderboard";
-import { NameSortOptions, RankSortOptions } from "utils/constants";
 
-const initialState: Leaderboard[] = [];
+const initialState: LeaderboardState = {
+  name: '',
+  leaderboard: []
+};
 
-function leaderboardReducer(state = initialState, action: LeaderboardAction) {
+function leaderboardReducer(state = initialState, action: LeaderboardAction): LeaderboardState {
   switch (action.type) {
     case INITIALIZE_LEADERBOARD:
-      return action.payload.sort((a, b) => b.bananas - a.bananas);
-    case FILTER_LEADERBOARD:
-      switch (action.payload) {
-        case RankSortOptions.highest:
-          return [...state].sort((a, b) => b.bananas - a.bananas);
-        case RankSortOptions.lowest:
-          return [...state].sort((a, b) => a.bananas - b.bananas);
-        case NameSortOptions.az:
-          return [...state].sort((a, b) => a.name.localeCompare(b.name));
-        case NameSortOptions.za:
-          return [...state].sort((a, b) => b.name.localeCompare(a.name));
-        default:
-          return state;
-      }
+      return {
+        name: state.name,
+        leaderboard: action.payload.leaderboard,
+      };
     case SEARCH_USER:
-      let sortedLeaderboard = [...state].sort((a, b) => b.bananas - a.bananas);
-      const userIndex = sortedLeaderboard.findIndex(user => user.name.includes(action.payload));
+      if (action.payload.name.length == 0) {
+        return {
+          name: '',
+          leaderboard: state.leaderboard,
+        }
+      }
+
+      const leaderboard = [...state.leaderboard].sort((a, b) => b.bananas - a.bananas);
+      const userIndex = leaderboard.findIndex(user => user.name.includes(action.payload.name));
       if (userIndex === -1) {
         Alert.alert('This user name does not exist! Please specify an existing user name!');
-        return state;
+        return {
+          name: action.payload.name,
+          leaderboard,
+        }
       }
 
-      let top10 = sortedLeaderboard.slice(0, 10);
-      const searchedUser = sortedLeaderboard[userIndex];
-      if (!top10.some(user => user.name.includes(searchedUser.name))) {
-        sortedLeaderboard = [...sortedLeaderboard.slice(0, 9), searchedUser, ...sortedLeaderboard.slice(9)];
+      const top10 = leaderboard.slice(0, 10);
+      const searchedUser = leaderboard[userIndex];
+
+      const top10Index = top10.findIndex(user => user.name.includes(searchedUser.name));
+      if (top10Index === -1) {
+        return {
+          name: action.payload.name,
+          leaderboard: [...leaderboard.slice(0, 9), searchedUser, ...leaderboard.slice(9)],
+        }
       }
 
-      return [...sortedLeaderboard];
+      return {
+        name: action.payload.name,
+        leaderboard,
+      };
     default:
       return state;
   }

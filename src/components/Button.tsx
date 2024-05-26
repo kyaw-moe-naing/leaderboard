@@ -15,7 +15,6 @@ function Button(props: ButtonProps) {
   } = props;
   const { colors } = useTheme()
 
-
   return (
     <TouchableOpacity
       disabled={!onPress}

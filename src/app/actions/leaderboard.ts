@@ -1,52 +1,47 @@
 import Leaderboard from "types/models/leaderboard";
-import { OptionPayload } from "./filters";
 
 const INITIALIZE_LEADERBOARD = 'INITIALIZE_LEADERBOARD';
-const FILTER_LEADERBOARD = 'FILTER_LEADERBOARD';
 const SEARCH_USER = 'SEARCH_USER';
+
+type InitializeLeaderboardPayload = {
+  leaderboard: Leaderboard[];
+}
 
 type InitializeLeaderboardAction = {
   type: typeof INITIALIZE_LEADERBOARD;
-  payload: Leaderboard[];
+  payload: InitializeLeaderboardPayload;
 }
 
-function initializeLeaderboard(data: Leaderboard[]): InitializeLeaderboardAction {
+function initializeLeaderboard(payload: InitializeLeaderboardPayload): InitializeLeaderboardAction {
   return {
     type: INITIALIZE_LEADERBOARD,
-    payload: data,
-  };
-}
-
-type FilterLeaderboardAction = {
-  type: typeof FILTER_LEADERBOARD;
-  payload: OptionPayload;
-}
-
-function filterLeaderboard(payload: OptionPayload): FilterLeaderboardAction {
-  return {
-    type: FILTER_LEADERBOARD,
     payload,
   };
 }
 
-interface SearchUserAction {
-  type: typeof SEARCH_USER;
-  payload: string;
+type SearchUserPayload = {
+  name: string;
 }
 
-function searchUser(payload: string): SearchUserAction {
+type SearchUserAction = {
+  type: typeof SEARCH_USER;
+  payload: SearchUserPayload;
+}
+
+function searchUser(payload: SearchUserPayload): SearchUserAction {
   return {
     type: SEARCH_USER,
     payload,
   };
 }
 
-type LeaderboardAction = InitializeLeaderboardAction | FilterLeaderboardAction | SearchUserAction;
+type LeaderboardState = InitializeLeaderboardPayload & SearchUserPayload;
+type LeaderboardAction = InitializeLeaderboardAction | SearchUserAction;
 
 export {
   INITIALIZE_LEADERBOARD,
-  FILTER_LEADERBOARD,
   SEARCH_USER,
+  type LeaderboardState,
   type LeaderboardAction,
 }
-export { initializeLeaderboard, filterLeaderboard, searchUser }
+export { initializeLeaderboard, searchUser }
