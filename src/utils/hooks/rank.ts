@@ -1,4 +1,5 @@
-import leaderboardJson from 'assets/leaderboard.json'
+import { RootState } from "app/store";
+import { useSelector } from "react-redux";
 import Leaderboard from "types/models/leaderboard"
 
 type GetRankHookResult = {
@@ -6,10 +7,10 @@ type GetRankHookResult = {
 }
 
 const useGetRankHook = (): GetRankHookResult => {
-  const leaderboard = Object.values(leaderboardJson) as Leaderboard[];
+  const { full } = useSelector((state: RootState) => state.leaderboard)
 
   const getRank = (item: Leaderboard): number => {
-    const users = leaderboard.sort((a, b) => b.bananas - a.bananas);
+    const users = full.sort((a, b) => b.bananas - a.bananas);
     return users.indexOf(item) + 1;
   }
 

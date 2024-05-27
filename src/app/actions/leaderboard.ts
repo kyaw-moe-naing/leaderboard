@@ -1,10 +1,11 @@
 import Leaderboard from "types/models/leaderboard";
+import { FiltersState } from "./filters";
 
 const INITIALIZE_LEADERBOARD = 'INITIALIZE_LEADERBOARD';
-const SEARCH_USER = 'SEARCH_USER';
+const GENERATE_LEADERBOARD = 'GENERATE_LEADERBOARD';
 
 type InitializeLeaderboardPayload = {
-  leaderboard: Leaderboard[];
+  full: Leaderboard[];
 }
 
 type InitializeLeaderboardAction = {
@@ -19,29 +20,25 @@ function initializeLeaderboard(payload: InitializeLeaderboardPayload): Initializ
   };
 }
 
-type SearchUserPayload = {
-  name: string;
+type GenerateLeaderboardAction = {
+  type: typeof GENERATE_LEADERBOARD;
+  payload: FiltersState;
 }
 
-type SearchUserAction = {
-  type: typeof SEARCH_USER;
-  payload: SearchUserPayload;
-}
-
-function searchUser(payload: SearchUserPayload): SearchUserAction {
+function generateLeaderboard(payload: FiltersState): GenerateLeaderboardAction {
   return {
-    type: SEARCH_USER,
+    type: GENERATE_LEADERBOARD,
     payload,
   };
 }
 
-type LeaderboardState = InitializeLeaderboardPayload & SearchUserPayload;
-type LeaderboardAction = InitializeLeaderboardAction | SearchUserAction;
+type LeaderboardState = InitializeLeaderboardPayload & { generated: Leaderboard[] };
+type LeaderboardAction = InitializeLeaderboardAction | GenerateLeaderboardAction;
 
 export {
   INITIALIZE_LEADERBOARD,
-  SEARCH_USER,
+  GENERATE_LEADERBOARD,
   type LeaderboardState,
   type LeaderboardAction,
 }
-export { initializeLeaderboard, searchUser }
+export { initializeLeaderboard, generateLeaderboard }

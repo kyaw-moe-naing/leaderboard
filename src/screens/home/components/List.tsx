@@ -10,12 +10,12 @@ import useGetRankHook from "utils/hooks/rank"
 function List() {
   const { colors } = useTheme()
 
-  const name = useSelector((state: RootState) => state.leaderboard.name)
-  const leaderboard = useSelector((state: RootState) => state.sort.leaderboard)
+  const { name } = useSelector((state: RootState) => state.filters)
+  const { generated } = useSelector((state: RootState) => state.leaderboard)
 
   const { getRank } = useGetRankHook()
 
-  if (leaderboard.length == 0) return;
+  if (generated.length == 0) return;
 
   return (
     <View style={[styles.list, { backgroundColor: colors.card }]}>
@@ -24,9 +24,9 @@ function List() {
       <FlatList
         style={styles.list}
         contentContainerStyle={styles.listContent}
-        data={leaderboard.slice(0, 10)}
+        data={generated}
         renderItem={item => <User
-          isSearchUser={name.length > 0 && item.item.name.includes(name)}
+          isSearchUser={name != undefined && item.item.name.includes(name)}
           rank={getRank(item.item)}
           leaderboard={item.item}
         />}

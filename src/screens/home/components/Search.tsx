@@ -1,5 +1,5 @@
-import { searchUser } from "app/actions/leaderboard"
-import { sortLeaderboard } from "app/actions/sort"
+import { setName } from "app/actions/filters"
+import { generateLeaderboard } from "app/actions/leaderboard"
 import { useAppDispatch } from "app/hooks"
 import { RootState } from "app/store"
 import Button from "components/Button"
@@ -10,22 +10,21 @@ import { useSelector } from "react-redux"
 import { GAP } from "utils/constants"
 
 function Search() {
-  const [username, setUsername] = useState('');
-
-  const option = useSelector((state: RootState) => state.sort.option);
-  const leaderboard = useSelector((state: RootState) => state.leaderboard.leaderboard);
+  const [keyword, setKeyword] = useState('');
+  const { name, option } = useSelector((state: RootState) => state.filters);
 
   const dispatch = useAppDispatch()
 
-  const search = (text: string) => {
-    dispatch(searchUser({ name: text }));
-    dispatch(sortLeaderboard({ option, leaderboard: text.length == 0 ? leaderboard : leaderboard.slice(0, 10) }));
+  const onSearch = (text: string) => {
+    dispatch(setName({ name: text }))
+    dispatch(generateLeaderboard({ name: text, option }));
     Keyboard.dismiss();
   }
 
   const onClear = () => {
-    setUsername('');
-    search('');
+    setKeyword('');
+    dispatch(setName({}))
+    dispatch(generateLeaderboard({ option }));
     Keyboard.dismiss();
   }
 
@@ -34,16 +33,16 @@ function Search() {
       <SafeAreaView />
       <View style={styles.search}>
         <SearchInput
-          value={username}
+          value={keyword}
           placeholder="Search User"
-          onChange={setUsername}
+          onChange={setKeyword}
           onClear={onClear}
         />
         <View style={{ width: GAP / 2 }} />
         <Button
           width={120}
           title="Search"
-          onPress={username.length == 0 ? undefined : () => search(username)}
+          onPress={keyword.length == 0 ? undefined : () => onSearch(keyword)}
         />
       </View>
     </>

@@ -1,6 +1,7 @@
 import { MenuView } from "@react-native-menu/menu"
 import { useTheme } from "@react-navigation/native"
-import { OptionPayload, sortLeaderboard } from "app/actions/sort"
+import { OptionPayload, setOption } from "app/actions/filters"
+import { generateLeaderboard } from "app/actions/leaderboard"
 import { useAppDispatch } from "app/hooks"
 import { RootState } from "app/store"
 import DropDownButton from "components/DropDownButton"
@@ -15,20 +16,12 @@ function Header() {
   const nameSortOptions = Object.values(NameSortOptions);
   const rankSortOptions = Object.values(RankSortOptions);
 
-  const option = useSelector((state: RootState) => state.sort.option);
-
-  const name = useSelector((state: RootState) => state.leaderboard.name);
-  const leaderboard = useSelector((state: RootState) => state.leaderboard.leaderboard);
-
+  const { name, option } = useSelector((state: RootState) => state.filters);
   const dispatch = useAppDispatch()
 
-  const onChange = (event: OptionPayload) => {
-    dispatch(
-      sortLeaderboard({
-        option: event,
-        leaderboard: name.length == 0 ? leaderboard : leaderboard.slice(0, 10)
-      })
-    )
+  const onChange = (option: OptionPayload) => {
+    dispatch(setOption({ option }));
+    dispatch(generateLeaderboard({ name, option }));
   }
 
   return (
