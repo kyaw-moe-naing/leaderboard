@@ -1,6 +1,7 @@
 import { INITIALIZE_LEADERBOARD, LeaderboardAction, LeaderboardState, GENERATE_LEADERBOARD } from "app/actions/leaderboard";
 import { Alert } from "react-native";
-import { RankSortOptions, NameSortOptions } from "utils/constants";
+import { RankSortOptions } from "utils/constants";
+import { sort } from "utils/helpers/sort";
 
 const initialState: LeaderboardState = {
   full: [],
@@ -11,11 +12,11 @@ function leaderboardReducer(state = initialState, action: LeaderboardAction): Le
   switch (action.type) {
     case INITIALIZE_LEADERBOARD:
       return {
+        ...state,
         full: action.payload.full,
-        generated: state.generated,
       };
     case GENERATE_LEADERBOARD:
-      let leaderboard = [...state.full].sort((a, b) => b.bananas - a.bananas);
+      let leaderboard = sort([...state.full], RankSortOptions.highest);
 
       if (action.payload.name) {
         const userIndex = leaderboard.findIndex(user => user.name.includes(action.payload.name!));
@@ -24,7 +25,7 @@ function leaderboardReducer(state = initialState, action: LeaderboardAction): Le
           return state;
         }
 
-        let top10 = leaderboard.slice(0, 10);
+        const top10 = leaderboard.slice(0, 10);
         const searchedUser = leaderboard[userIndex];
 
         const top10Index = top10.findIndex(user => user.name.includes(searchedUser.name));
@@ -37,25 +38,9 @@ function leaderboardReducer(state = initialState, action: LeaderboardAction): Le
         leaderboard = leaderboard.slice(0, 10)
       }
 
-      switch (action.payload.option) {
-        case RankSortOptions.highest:
-          break;
-        case RankSortOptions.lowest:
-          leaderboard = leaderboard.reverse();
-          break;
-        case NameSortOptions.az:
-          leaderboard = leaderboard.sort((a, b) => a.name.localeCompare(b.name));
-          break;
-        case NameSortOptions.za:
-          leaderboard = leaderboard.sort((a, b) => b.name.localeCompare(a.name));
-          break;
-        default:
-          break;
-      }
-
       return {
         ...state,
-        generated: leaderboard.slice(0, 10),
+        generated: sort(leaderboard, action.payload.option).slice(0, 10),
       };
     default:
       return state;
